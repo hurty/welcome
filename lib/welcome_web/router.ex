@@ -16,7 +16,7 @@ defmodule WelcomeWeb.Router do
   scope "/", WelcomeWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/", BoardController, :index
   end
 
   # Other scopes may use custom stacks.

@@ -1,4 +1,4 @@
-defmodule WelcomeWeb.PageController do
+defmodule WelcomeWeb.BoardController do
   use WelcomeWeb, :controller
 
   def index(conn, _params) do
