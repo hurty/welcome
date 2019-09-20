@@ -1,5 +1,10 @@
 import React from "react";
 import Card from "./card";
+import { Droppable } from "react-beautiful-dnd";
+
+const getListStyle = isDraggingOver => ({
+  background: isDraggingOver ? "#FDF3E6" : "transparent"
+});
 
 class List extends React.Component {
   getCardsCount() {
@@ -7,9 +12,11 @@ class List extends React.Component {
   }
 
   render() {
-    const applicantsList = this.props.stage.applicants.map(applicant => (
-      <Card applicant={applicant} key={applicant.id}></Card>
-    ));
+    const applicantsList = this.props.stage.applicants.map(
+      (applicant, index) => (
+        <Card applicant={applicant} key={applicant.id} index={index}></Card>
+      )
+    );
 
     return (
       <div className="list">
@@ -18,7 +25,18 @@ class List extends React.Component {
           <div className="list__counter">{this.getCardsCount()}</div>
         </div>
 
-        <ul className="list__cards">{applicantsList}</ul>
+        <Droppable droppableId={this.props.stage.id}>
+          {(provided, snapshot) => (
+            <ul
+              className="list__cards"
+              ref={provided.innerRef}
+              style={getListStyle(snapshot.isDraggingOver)}
+            >
+              {applicantsList}
+              {provided.placeholder}
+            </ul>
+          )}
+        </Droppable>
       </div>
     );
   }

@@ -1,5 +1,6 @@
 import React from "react";
 import List from "./list";
+import { DragDropContext } from "react-beautiful-dnd";
 
 class Board extends React.Component {
   constructor(props) {
@@ -31,6 +32,31 @@ class Board extends React.Component {
     this.state = boardExampleData;
   }
 
+  moveCard(source, destination) {
+    const sourceList = this.getList(source.droppableId);
+    const destinationList = this.getList(destination.droppableId);
+
+    const [movedCard] = sourceList.applicants.splice(source.index, 1);
+    destinationList.applicants.splice(destination.index, 0, movedCard);
+
+    this.setState(this.state);
+
+    console.log("TODO: server sync");
+  }
+
+  getList(id) {
+    return this.state.stages.find(stage => stage.id === id);
+  }
+
+  onDragEnd(result) {
+    const { source, destination } = result;
+
+    // dropped outside of a list
+    if (!destination) return;
+
+    this.moveCard(source, destination);
+  }
+
   componentDidMount() {
     console.log("TODO: Retrieve board data");
   }
@@ -40,7 +66,13 @@ class Board extends React.Component {
       <List stage={stage} key={stage.id}></List>
     ));
 
-    return <section className="board">{stages}</section>;
+    return (
+      <section className="board">
+        <DragDropContext onDragEnd={this.onDragEnd.bind(this)}>
+          {stages}
+        </DragDropContext>
+      </section>
+    );
   }
 }
 
