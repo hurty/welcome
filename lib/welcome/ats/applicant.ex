@@ -2,15 +2,15 @@ defmodule Welcome.ATS.Applicant do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Welcome.ATS.Stage
+  alias Welcome.ATS.{Stage, Application}
 
   schema "applicants" do
     field :name, :string
     field :title, :string
-    field :position, :integer
     timestamps()
 
-    many_to_many(:stages, Stage, join_through: "applicants_stages")
+    has_many(:applications, Application)
+    has_many(:stages, through: [:applications, :stage])
   end
 
   @doc false

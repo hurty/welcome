@@ -34,6 +34,13 @@ defmodule Welcome.Factory do
     }
   end
 
+  def build(:mary) do
+    %Applicant{
+      name: "Mary Pouet",
+      title: "Pianist"
+    }
+  end
+
   # --- STAGES
 
   def build(:stage) do
