@@ -24,16 +24,22 @@ defmodule Welcome.ATS do
 
     applicant
     |> Ecto.build_assoc(:applications)
-    |> Application.changeset(%{stage_id: first_stage.id})
+    |> Application.create_changeset(%{stage_id: first_stage.id})
     |> Position.insert_at_bottom(:stage_id, first_stage.id)
     |> Repo.insert()
   end
 
-  def move_application!(application, stage, position) do
+  def update_application(application, attrs) do
     application
-    |> Application.changeset(%{stage_id: stage.id, position: position})
+    |> Application.update_changeset(attrs)
     |> Position.recompute_positions(:stage_id)
-    |> Repo.update!()
+    |> Repo.update()
+  end
+
+  def list_stages(_job_offer \\ nil) do
+    Stage
+    |> order_by(:position)
+    |> Repo.all()
   end
 
   def list_applicants_for_stage(stage) do
