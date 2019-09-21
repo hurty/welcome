@@ -39,6 +39,7 @@ defmodule Welcome.ATS do
   def list_stages(_job_offer \\ nil) do
     Stage
     |> order_by(:position)
+    |> preload(:applicants)
     |> Repo.all()
   end
 

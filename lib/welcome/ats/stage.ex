@@ -2,14 +2,16 @@ defmodule Welcome.ATS.Stage do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Welcome.ATS.Applicant
+  alias Welcome.ATS.Application
+
+  @derive {Jason.Encoder, only: [:id, :name, :position, :applicants]}
 
   schema "stages" do
     field :name, :string
     field :position, :integer
     timestamps()
-
-    many_to_many(:applicants, Applicant, join_through: "applicants_stages")
+    has_many(:applications, Application)
+    has_many(:applicants, through: [:applications, :applicant])
   end
 
   @doc false

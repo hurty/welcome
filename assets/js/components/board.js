@@ -1,35 +1,14 @@
 import React from "react";
 import List from "./list";
 import { DragDropContext } from "react-beautiful-dnd";
+import Socket from "../socket";
 
 class Board extends React.Component {
   constructor(props) {
-    const boardExampleData = {
-      stages: [
-        {
-          id: 1,
-          name: "A rencontrer",
-          applicants: [
-            { id: 1, name: "Pierre Hurtevent", title: "Developer" },
-            { id: 2, name: "John Paul", title: "Astronaut" }
-          ]
-        },
-        {
-          id: 2,
-          name: "Entretien",
-          applicants: [
-            {
-              id: 3,
-              name: "George Abitbol",
-              title: "the Most Classy Man on Earth"
-            }
-          ]
-        }
-      ]
-    };
-
     super(props);
-    this.state = boardExampleData;
+    this.state = {
+      stages: []
+    };
   }
 
   moveCard(source, destination) {
@@ -57,8 +36,36 @@ class Board extends React.Component {
     this.moveCard(source, destination);
   }
 
+  handleChannel() {
+    let channel = Socket.channel("job_offer:board", {});
+    channel
+      .join()
+      .receive("ok", resp => {
+        console.log("Joined the 'job_offer' channel successfully", resp);
+        channel.push("list_stages", {});
+      })
+      .receive("error", resp => {
+        console.log("Unable to join the 'job_offer' channel", resp);
+      });
+
+    channel.on("phx_reply", payload => {
+      switch (payload.response.type) {
+        case "list_stages":
+          console.log("Load initial data", payload.response);
+          this.loadStages(payload.response.stages);
+          break;
+        default:
+          return;
+      }
+    });
+  }
+
+  loadStages(stages) {
+    this.setState({ stages: stages });
+  }
+
   componentDidMount() {
-    console.log("TODO: Retrieve board data");
+    this.handleChannel();
   }
 
   render() {

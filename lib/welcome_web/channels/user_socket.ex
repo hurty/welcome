@@ -2,7 +2,7 @@ defmodule WelcomeWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", WelcomeWeb.RoomChannel
+  channel "job_offer:*", WelcomeWeb.JobOfferChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
