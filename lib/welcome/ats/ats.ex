@@ -29,6 +29,10 @@ defmodule Welcome.ATS do
     |> Repo.insert()
   end
 
+  def get_application!(id) do
+    Repo.get!(Application, id)
+  end
+
   def update_application(application, attrs) do
     application
     |> Application.update_changeset(attrs)
@@ -37,9 +41,11 @@ defmodule Welcome.ATS do
   end
 
   def list_stages(_job_offer \\ nil) do
+    applications_query = from a in Application, order_by: :position, preload: [:applicant]
+
     Stage
     |> order_by(:position)
-    |> preload(:applicants)
+    |> preload(applications: ^applications_query)
     |> Repo.all()
   end
 

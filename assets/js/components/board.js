@@ -15,12 +15,21 @@ class Board extends React.Component {
     const sourceList = this.getList(source.droppableId);
     const destinationList = this.getList(destination.droppableId);
 
-    const [movedCard] = sourceList.applicants.splice(source.index, 1);
-    destinationList.applicants.splice(destination.index, 0, movedCard);
+    const [movedApplication] = sourceList.applications.splice(source.index, 1);
+    destinationList.applications.splice(destination.index, 0, movedApplication);
 
     this.setState(this.state);
 
-    console.log("TODO: server sync");
+    const updatedApplicationPayload = {
+      application: {
+        id: movedApplication.id,
+        stage_id: destination.droppableId,
+        position: destination.index
+      }
+    };
+
+    this.channel.push("update_application", updatedApplicationPayload);
+    console.log("Server sync", updatedApplicationPayload);
   }
 
   getList(id) {
@@ -37,18 +46,23 @@ class Board extends React.Component {
   }
 
   handleChannel() {
-    let channel = Socket.channel("job_offer:board", {});
-    channel
+    this.channel = Socket.channel("job_offer:board", {});
+
+    this.channel
       .join()
       .receive("ok", resp => {
         console.log("Joined the 'job_offer' channel successfully", resp);
-        channel.push("list_stages", {});
+        this.channel.push("list_stages", {});
       })
       .receive("error", resp => {
         console.log("Unable to join the 'job_offer' channel", resp);
       });
 
-    channel.on("phx_reply", payload => {
+    this.handleChannelReplies();
+  }
+
+  handleChannelReplies() {
+    this.channel.on("phx_reply", payload => {
       switch (payload.response.type) {
         case "list_stages":
           console.log("Load initial data", payload.response);

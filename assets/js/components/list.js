@@ -8,13 +8,17 @@ const getListStyle = isDraggingOver => ({
 
 class List extends React.Component {
   getCardsCount() {
-    return this.props.stage.applicants.length;
+    return this.props.stage.applications.length;
   }
 
   render() {
-    const applicantsList = this.props.stage.applicants.map(
-      (applicant, index) => (
-        <Card applicant={applicant} key={applicant.id} index={index}></Card>
+    const applicationsList = this.props.stage.applications.map(
+      (application, index) => (
+        <Card
+          application={application}
+          key={application.id}
+          index={index}
+        ></Card>
       )
     );
 
@@ -32,7 +36,7 @@ class List extends React.Component {
               ref={provided.innerRef}
               style={getListStyle(snapshot.isDraggingOver)}
             >
-              {applicantsList}
+              {applicationsList}
               {provided.placeholder}
             </ul>
           )}

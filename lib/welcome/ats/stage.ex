@@ -4,7 +4,7 @@ defmodule Welcome.ATS.Stage do
 
   alias Welcome.ATS.Application
 
-  @derive {Jason.Encoder, only: [:id, :name, :position, :applicants]}
+  @derive {Jason.Encoder, only: [:id, :name, :position, :applications]}
 
   schema "stages" do
     field :name, :string

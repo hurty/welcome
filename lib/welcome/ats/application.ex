@@ -4,6 +4,8 @@ defmodule Welcome.ATS.Application do
 
   alias Welcome.ATS.{Applicant, Stage}
 
+  @derive {Jason.Encoder, only: [:id, :applicant]}
+
   schema "applications" do
     belongs_to(:applicant, Applicant)
     belongs_to(:stage, Stage)
