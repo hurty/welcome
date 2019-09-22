@@ -2,8 +2,24 @@ defmodule Welcome.ATS do
   import Ecto.Query
 
   alias Welcome.Repo
-  alias Welcome.ATS.{Applicant, Stage, Application}
+  alias Welcome.ATS.{JobOffer, Applicant, Stage, Application}
   alias Welcome.Position
+
+  def get_job_offer!() do
+    %JobOffer{stages: list_stages(), applications: list_applications()}
+  end
+
+  def list_stages(_job_offer \\ nil) do
+    applications_query =
+      from a in Application,
+        order_by: :position,
+        preload: [:applicant]
+
+    Stage
+    |> order_by(:position)
+    |> preload(applications: ^applications_query)
+    |> Repo.all()
+  end
 
   def create_stage(attrs) do
     %Stage{}
@@ -15,6 +31,18 @@ defmodule Welcome.ATS do
     %Applicant{}
     |> Applicant.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def list_applications() do
+    Application
+    |> preload(:applicant)
+    |> Repo.all()
+  end
+
+  def get_application!(id) do
+    Application
+    |> preload(:applicant)
+    |> Repo.get!(id)
   end
 
   # Link an applicant to a job offer, starting at the beginning of the recruitment pipeline.
@@ -29,24 +57,11 @@ defmodule Welcome.ATS do
     |> Repo.insert()
   end
 
-  def get_application!(id) do
-    Repo.get!(Application, id)
-  end
-
   def update_application(application, attrs) do
     application
     |> Application.update_changeset(attrs)
     |> Position.recompute_positions(:stage_id)
     |> Repo.update()
-  end
-
-  def list_stages(_job_offer \\ nil) do
-    applications_query = from a in Application, order_by: :position, preload: [:applicant]
-
-    Stage
-    |> order_by(:position)
-    |> preload(applications: ^applications_query)
-    |> Repo.all()
   end
 
   def list_applicants_for_stage(stage) do

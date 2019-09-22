@@ -2,7 +2,7 @@ defmodule Welcome.ATS.Applicant do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Welcome.ATS.{Stage, Application}
+  alias Welcome.ATS.{Application}
 
   @derive {Jason.Encoder, only: [:id, :name, :title]}
 

@@ -8,11 +8,11 @@ const getListStyle = isDraggingOver => ({
 
 class List extends React.Component {
   getCardsCount() {
-    return this.props.stage.applications.length;
+    return this.props.applications.length;
   }
 
   render() {
-    const applicationsList = this.props.stage.applications.map(
+    const applicationsList = this.props.applications.map(
       (application, index) => (
         <Card
           application={application}
