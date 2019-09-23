@@ -16,9 +16,49 @@ import "phoenix_html";
 // Local files can be imported directly using relative paths, for example:
 // import socket from "./socket"
 
-import React from "react";
-import ReactDOM from "react-dom";
+// import React from "react";
+// import ReactDOM from "react-dom";
 
-import Board from "./components/board";
+// import Board from "./components/board";
 
-ReactDOM.render(<Board />, document.getElementById("board"));
+// ReactDOM.render(<Board />, document.getElementById("board"));
+
+import { Socket } from "phoenix";
+import LiveSocket from "../../deps/phoenix_live_view";
+import { Sortable, Plugins } from "@shopify/draggable";
+
+let Hooks = {};
+Hooks.Board = {
+  mounted() {
+    const sortable = new Sortable(document.querySelectorAll(".list__cards"), {
+      draggable: ".card",
+      mirror: {
+        constrainDimensions: true
+      },
+      swapAnimation: {
+        duration: 200,
+        easingFunction: "ease-in-out"
+      },
+      plugins: [Plugins.SwapAnimation]
+    });
+
+    sortable.on("sortable:stop", event => {
+      console.log(event);
+      const source = event.data.dragEvent.data.source;
+      const applicationId = source.getAttribute("data-application-id");
+      const newStageId = event.data.newContainer.getAttribute("data-stage-id");
+      const newIndex = event.data.newIndex;
+      const applicationPayload = {
+        application: {
+          id: applicationId,
+          stage_id: newStageId,
+          position: newIndex
+        }
+      };
+      this.pushEvent("update_application", applicationPayload);
+    });
+  }
+};
+
+let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks });
+liveSocket.connect();

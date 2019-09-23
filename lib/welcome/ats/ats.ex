@@ -5,6 +5,12 @@ defmodule Welcome.ATS do
   alias Welcome.ATS.{JobOffer, Applicant, Stage, Application}
   alias Welcome.Position
 
+  @topic "board"
+
+  def subscribe do
+    Phoenix.PubSub.subscribe(Welcome.PubSub, @topic)
+  end
+
   def get_job_offer!() do
     %JobOffer{stages: list_stages(), applications: list_applications()}
   end
@@ -62,6 +68,7 @@ defmodule Welcome.ATS do
     |> Application.update_changeset(attrs)
     |> Position.recompute_positions(:stage_id)
     |> Repo.update()
+    |> notify_subscribers([:application, :updated])
   end
 
   def list_applicants_for_stage(stage) do
@@ -81,4 +88,18 @@ defmodule Welcome.ATS do
     |> first(:position)
     |> Repo.one()
   end
+
+  defp notify_subscribers({:ok, result}, event) do
+    Phoenix.PubSub.broadcast(Welcome.PubSub, @topic, {__MODULE__, event, result})
+
+    Phoenix.PubSub.broadcast(
+      Welcome.PubSub,
+      @topic <> "#{result.id}",
+      {__MODULE__, event, result}
+    )
+
+    {:ok, result}
+  end
+
+  defp notify_subscribers({:error, reason}, _event), do: {:error, reason}
 end

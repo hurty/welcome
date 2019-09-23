@@ -77,3 +77,20 @@ body {
 .applicant__info {
   color: rgb(169, 169, 169);
 }
+
+.draggable-handle {
+  cursor: grab;
+}
+
+.draggable-mirror {
+  border: 1px dotted #eee;
+}
+
+.draggable-container--is-dragging {
+  @apply shadow-inner;
+}
+
+.draggable-source--is-dragging {
+  background: #ccc;
+  opacity: 0.25;
+}
