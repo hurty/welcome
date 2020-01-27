@@ -9,7 +9,7 @@
   </head>
   <body>
     <header>
-      <h1 class="page-title">Applicants Board</h1>
+      <h1 class="page-title">Applicant Board</h1>
     </header>
     
     <main role="main" class="container">
